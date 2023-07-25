@@ -1,0 +1,839 @@
+{
+    "SQL START": {
+	"production": "ANYOF",
+	"choices": [
+	    "statement_select",
+	    "statement_delete",
+	    "statement_insert",
+	    "statement_update",
+	    "statement_create",
+	    "statement_alter",
+	    "statement_drop"
+	]
+    },
+    "statement_select": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Select",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_SELECT"
+            },
+            {
+		"production": "RULE",
+		"name": "select_item"
+            },
+	    {
+                "production": "REPEAT",
+                "minrepeat": 0,
+                "content": {
+                    "production": "ALLOF",
+                    "sequence": [
+                        {
+                            "production": "TERMINAL",
+                            "name": "LEX_COMMA"
+                        },
+                        {
+                            "production": "RULE",
+                            "name": "select_item"
+                        }
+                    ]
+                }
+            },
+            {
+                "production": "RULE",
+                "name": "from_clause"
+            },
+            {
+                "production": "RULE",
+                "name": "where_clause"
+            }
+	]
+    },
+    "statement_alter": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Alter",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_ALTER"
+            }
+	]
+    },
+    "statement_create": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Create",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_CREATE"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"temp_global",
+				"temp_local"
+			    ]
+			},
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_TEMPORARY",
+			    "propName": "tempTable"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_TABLE",
+		"propName": "operation"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_IDENTIFIER",
+		"propName": "tablename"
+	    },
+	    {
+		"production": "FUNCTION",
+		"name": "create_expression"
+            }
+	]
+    },
+    "temp_global" : {
+	"production": "TERMINAL",
+	"name": "LEX_KEYWORD_GLOBAL",
+	"propName": "tempType"
+    },
+    "temp_local" : {
+	"production": "TERMINAL",
+	"name": "LEX_KEYWORD_LOCAL",
+	"propName": "tempType"
+    },
+    "statement_delete": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Delete",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_DELETE"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_FROM"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_IDENTIFIER",
+		"propName": "tableName"
+	    },
+	    {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_WHERE"
+	    },
+	    {
+		"production": "FUNCTION",
+		"name": "where_expression"
+	    }
+	]
+    },
+    "statement_drop": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Drop",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_DROP"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_TABLE"
+            }
+	]
+    },
+    "statement_insert": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Insert",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_INSERT"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_TABLE"
+            }
+	]
+    },
+    "statement_update": {
+	"production": "ALLOF",
+	"className": "ContextBlock_Update",
+	"parentArrayName": "children",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_UPDATE"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_TABLE"
+            }
+	]
+    },
+    "select_item": {
+	"production": "ANYOF",
+	"choices": [
+	    "select_item_function_avg",
+	    "select_item_function_count_star",
+	    "select_item_function_count",
+	    "select_item_function_max",
+	    "select_item_function_min",
+	    "select_item_function_general",
+	    "select_item_star",
+	    "select_item_subselect",
+	    "select_item_dotted_identifier",
+	    "select_item_single_identifier"
+	]
+    },
+    "select_item_single_identifier": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_IDENTIFIER",
+		"propName": "name"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+	    }
+	]
+    },
+    "select_item_dotted_identifier": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_DOTTED_IDENTIFIER",
+		"propName": "name"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+	    }
+	]
+    },
+    "select_item_star": {
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_STAR",
+		"propName": "name"
+            }
+	]
+    },
+    "select_item_subselect": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_SELECT"
+            },
+            {
+		"production": "RULE",
+		"name": "select_item"
+            },
+	    {
+                "production": "REPEAT",
+                "minrepeat": 0,
+                "content": {
+                    "production": "ALLOF",
+                    "sequence": [
+                        {
+                            "production": "TERMINAL",
+                            "name": "LEX_COMMA"
+                        },
+                        {
+                            "production": "RULE",
+                            "name": "select_item"
+                        }
+                    ]
+                }
+            },
+            {
+                "production": "RULE",
+                "name": "from_clause"
+            },
+            {
+                "production": "RULE",
+                "name": "where_clause"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            }
+	]
+    },
+    "select_item_function_avg": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_AVG",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 1,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "parentArrayName": "parameters",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "select_item_function_count_star": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_COUNT",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 1,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter_star"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "select_function_parameter_star": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_STAR",
+		"propName": "value"
+            }
+	]
+    },
+    "select_item_function_count": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_COUNT",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 1,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "select_function_parameter": {
+	"production": "ANYOF",
+	"choices": [
+	    "select_function_parameter_dotted_identifier",
+	    "select_function_parameter_identifier",
+	    "select_function_parameter_string_s",
+	    "select_function_parameter_string_d",
+	    "select_function_parameter_num_float",
+	    "select_function_parameter_num_int"
+	]
+    },
+    "select_function_parameter_identifier": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_IDENTIFIER",
+		"propName": "name"
+            }
+	]
+    },
+    "select_function_parameter_dotted_identifier": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_DOTTED_IDENTIFIER",
+		"propName": "name",
+		"propType": "SQL_COLUMN_VARIABLE"
+            }
+	]
+    },
+    "select_function_parameter_string_s": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_STRING_SQUOTE",
+		"propName": "value",
+		"propType": "SQL_STRING"
+            }
+	]
+    },
+    "select_function_parameter_string_d": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_STRING_DQUOTE",
+		"propName": "value",
+		"propType": "SQL_STRING"
+            }
+	]
+    },
+    "select_function_parameter_num_float": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_NUM_FLOAT",
+		"propName": "value",
+		"propType": "SQL_NUM_FLOAT"
+            }
+	]
+    },
+    "select_function_parameter_num_int": {
+	"production": "ALLOF",
+	"className": "Function_Parameter",
+	"parentArrayName": "parameters",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_NUM_INT",
+		"propName": "value",
+		"propType": "SQL_NUM_INT"
+            }
+	]
+    },
+    "select_item_function_max": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_MAX",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 1,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "parentArrayName": "parameters",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "select_item_function_min": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_MIN",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 1,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "parentArrayName": "parameters",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter"
+			}
+		    ]
+		}
+	    },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "select_item_function_general": {
+	"className": "DisplayColumn",
+	"parentArrayName": "columns",
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_IDENTIFIER",
+		"propName": "functionName"
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_OPEN"
+            },
+	    {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"content": {
+		    "production": "ALLOF",
+		    "parentArrayName": "parameters",
+		    "sequence": [
+			{
+			    "production": "RULE",
+			    "name": "select_function_parameter"
+			}
+		    ]
+		}
+	    },
+	    {
+                "production": "REPEAT",
+                "minrepeat": 0,
+                "content": {
+                    "production": "ALLOF",
+		    "parentArrayName": "parameters",
+                    "sequence": [
+                        {
+                            "production": "TERMINAL",
+                            "name": "LEX_COMMA"
+                        },
+                        {
+                            "production": "RULE",
+			    "name": "select_function_parameter"
+                        }
+                    ]
+                }
+            },
+            {
+		"production": "TERMINAL",
+		"name": "LEX_PAREN_CLOSE"
+            },
+            {
+		"production": "REPEAT",
+		"minrepeat": 0,
+		"maxrepeat": 1,
+		"content": {
+		    "production": "ALLOF",
+		    "sequence": [
+			{
+			    "production": "TERMINAL",
+			    "name": "LEX_KEYWORD_AS"
+			},
+			{
+			    "production": "ANYOF",
+			    "choices": [
+				"alias_identifier",
+				"alias_string_s",
+				"alias_string_d"
+			    ]
+			}
+		    ]
+		}
+            }
+	]
+    },
+    "alias_identifier": {
+	"production": "TERMINAL",
+	"propName": "alias",
+	"name": "LEX_IDENTIFIER"
+    },
+    "alias_string_s": {
+	"production": "TERMINAL",
+	"propName": "alias",
+	"name": "LEX_STRING_SQUOTE"
+    },
+    "alias_string_d": {
+	"production": "TERMINAL",
+	"propName": "alias",
+	"name": "LEX_STRING_DQUOTE"
+    },
+    "from_clause": {
+	"production": "ALLOF",
+	"sequence": [
+            {
+		"production": "TERMINAL",
+		"name": "LEX_KEYWORD_FROM"
+            },
+	    {
+		"production": "FUNCTION",
+		"name": "from_expression"
+	    }
+	]
+    },
+    "where_clause": {
+	"production": "REPEAT",
+	"minrepeat": 0,
+	"maxrepeat": 1,
+	"content": {
+	    "production": "ALLOF",
+	    "sequence": [
+		{
+		    "production": "TERMINAL",
+		    "name": "LEX_KEYWORD_WHERE"
+		},
+		{
+		    "production": "FUNCTION",
+		    "name": "where_expression"
+		}
+	    ]
+	}
+    }
+}

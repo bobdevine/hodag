@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>SQL Client</title>
+    <style>
+      #playground-container {
+        max-width: 75%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+  </head>
+  
+  <body>
+
+    <div id="playground-container" style="visibility: visible;">
+      <h1>Hodag Playground</h1>
+      <img src="hodag_2.jpeg" height=160px>
+      <h3>Enter SQL command(s):</h3>      
+      <textarea id="commandTextarea" rows=10 type="text"
+                style="width:100%;"
+                autocomplete="off" autocorrect="off" autocapitalize="off"
+                tabindex="0" spellcheck="false" wrap="off"
+                ></textarea>
+      <br/>
+      <p></p>
+      <button type="button" onclick="sendToServer()">SEND to server</button>
+
+      <br>
+      <h3>Results:</h3>
+      <div id="QueryResult" style="width:100%; min-height:120px; max-height:70%; overflow:auto; background:#CCFFFF; border: 1px solid;">
+      </div>
+      <div id="QueryElapsedTime" style="margin-top:20px; width:8em; min-height:20px; overflow:auto; border: 1px solid;">
+      </div>
+      
+    </div>
+
+    <script src="app.js"></script>
+
+  </body>
+</html>
