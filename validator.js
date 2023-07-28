@@ -40,6 +40,12 @@ function checkSelect(context) {
     selectContext.columnsForDisplay = [];
     selectContext.columnsRequired = [];
 
+    if (selectContext.uniqueness) {
+	console.log("validator.CheckSelect() uniqueness = ", selectContext.uniqueness);
+    } else {
+	console.log("validator.CheckSelect() : NO uniqueness");
+    }
+
     // *** Must specify at least one table
     if (!selectContext.fromTables) {
 	throw("checkSelect() -- missing table(s)");

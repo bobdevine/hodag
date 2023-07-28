@@ -89,8 +89,10 @@ exports.SQL_Lexer = function() {
             if (result !== null) {
 		let matchLength = result[0].length;
 		//console.log("_tokenFind() match : '" + rules[ruleNumber].type + "' len = " + matchLength + " string '" + input.slice(i, i+matchLength) + "'");
+		//console.log(JSON.stringify(rules[ruleNumber]));
 		let token = ['', i, 0];
-		if (Object.hasOwn(rules[ruleNumber], 'action')) {
+		//if (Object.hasOwn(rules[ruleNumber], 'action')) {
+		if (rules[ruleNumber].hasOwnProperty('action') ) {
 		    matchLength = rules[ruleNumber].action.call(this, token, input.slice(i), result[0].length);
 		} else {
 		    token[0] = rules[ruleNumber].type;

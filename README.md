@@ -28,10 +28,11 @@ period that Minnesota lumberjacks invented the tales of Paul Bunyan.]]
 | Version| Status                             |
 |--------|------------------------------------------------------|
 | 0.0.1 (June 2023)| "Works" for simple SQL select queries as a way to experiment with ideas for an query processing framework. The ~4K lines of Javascript code is very rudimentary and buggy. It written in "hackathon" style with little concern for good engineering. Performance is very good. It has a very small memory footprint and takes under 20 milliseconds for the browser to package the query, send it to the back-end, and receive a response. |
-| 0.0.2| Better parsing of JOIN syntax (Note: SQL sucks) These should produce the same plan for: (1) select eee from tt1 full outer join tt2 where tt1.aaa = tt2.aaa, (2) select eee from tt1 full outer join tt2 using (aaa), (3) select eee from tt1 full outer join tt2 on tt1.aaa = tt2.aaa, and (4) select eee from tt1 natural full outer join tt2|.
+| 0.0.2| Better parsing of JOIN syntax (Note: SQL sucks) These should produce the same plan for: (1) select eee from tt1 full outer join tt2 where tt1.aaa = tt2.aaa, (2) select eee from tt1 full outer join tt2 using (aaa), (3) select eee from tt1 full outer join tt2 on tt1.aaa = tt2.aaa, and (4) select eee from tt1 natural full outer join tt2|
 | 0.0.3| Begin implementing metaheuristics. Local contracts work for a few cases. |
 | 0.0.4| Added crude "CREATE TABLE" support. At start of server, create fake "tt1" and "tt2" tables for testing. Can later add new tables with the SQL command.|
-| 0.0.5  | Added early support for functions.                                                                                                                  |
+| 0.0.5| Added early support for functions.|
+| 0.0.6| Added early support for SELECT DISTINCT.|
 
 FUTURE plans:
 
@@ -126,15 +127,20 @@ Query optimization needs to implement three difficult tasks:
  1. estimate cost of each plan in the search space
  1. an enumeration algorithm to walk through the search space
 
-Many concepts and design decisions from the System R optimizer are still used today
-by using a model to estimate the cost of executing a plan.
-In general, an optimizer generates a mapping of a logical algebra expression to the optimal equivalent physical algebra expression, evaluates multiple equivalent plans for a query and picks the one with the lowest cost.
+In general, an optimizer generates a mapping of a logical algebra expression to the optimal equivalent physical algebra expression,
+evaluates multiple equivalent plans for a query and picks the one with the lowest cost.
 Two relational algebra expressions are equivalent if they generate the same output set of tuples.
+
+To obtain an efficient query plan, a classic query optimizer generates a subset of valid join orders using, for example, dynamic programming.
+Using cardinality estimates and a cost model, a classic optimizer then chooses the cheapest alternative from semantically equivalent alternatives.
+Theoretically, as long as the cardinality estimations and the cost model are accurate, this architecture obtains the optimal query plan.
+
+In reality, cardinality estimates are usually computed based on simplifying assumptions like uniformity and independence.
+In real-world data sets, these assumptions are frequently wrong, which can lead to sub-optimal plans.
 
 In general, there are three ways to search:
 
- 1. Use an enumerative method that searches until it finds the optimum solution.
-Unfortunately it might run for a long time.
+ 1. Use an enumerative method that searches until it finds the optimum solution. Unfortunately it might run for a long time.
  1. Use an approximation algorithm that runs in polynomial time. If no polynomial-time algorithm can solve a problem, it is an intractable problem.
  1. Use a heuristic technique without any a guarantee for the quality of a solution and time needed. Heuristic means ‘to discover solutions by 'trial and error’.
 
@@ -144,6 +150,7 @@ Researchers have tried many approximation and heuristic techniques:
  * IBM's System R optimizer added cost estimates with dynamic linear programming
  * Extensible frameworks (eg, Volcano) added rules to build the search space
 
+Many concepts and design decisions from the System R optimizer are still used today by using a model to estimate the cost of executing a plan.
 Much work has aimed at efficient implementation of joins, because relational systems commonly call for joins, yet face difficulties in optimizing their efficient execution.
 The problem arises because inner joins operate both commutatively and associatively.
 In practice, this means that the user merely supplies the list of tables for joining and the join conditions to use, and the database system has the task of determining the most efficient way to perform the operation.

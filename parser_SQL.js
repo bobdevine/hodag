@@ -156,9 +156,12 @@ function checkPattern(cmd, grammar, tokens, node, indexTokens, nodeContextBlock)
 		idx = ret.currentToken;
 		loopCount += 1;
 		if (node.maxrepeat && loopCount > node.maxrepeat) {
-		    console.log("checkPattern() REPEAT -- maxrepeat exceeded");
-		    throw("checkPattern() REPEAT -- maxrepeat exceeded");
-		    return { "status": false, "currentToken": indexTokens};
+		    let posStart = tokens[idx-1][1];
+		    let posEnd = posStart + tokens[idx-1][2];
+		    let str = cmd.slice(posStart, posEnd);
+		    //console.log("checkPattern() REPEAT -- maxrepeat exceeded");
+		    throw("checkPattern() REPEAT -- maxrepeat exceeded for '" + str + "'");
+		    //return { "status": false, "currentToken": indexTokens};
 		}
 		continue;
 	    }

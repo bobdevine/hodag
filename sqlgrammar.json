@@ -20,6 +20,18 @@
 		"production": "TERMINAL",
 		"name": "LEX_KEYWORD_SELECT"
             },
+	    {
+                "production": "REPEAT",
+                "minrepeat": 0,
+                "maxrepeat": 1,
+                "content": {
+		    "production": "ANYOF",
+		    "choices": [
+			"select_uniqueness_all",
+			"select_uniqueness_distinct"
+		    ]
+                }
+            },
             {
 		"production": "RULE",
 		"name": "select_item"
@@ -191,6 +203,16 @@
 		"name": "LEX_KEYWORD_TABLE"
             }
 	]
+    },
+    "select_uniqueness_all": {
+        "production": "TERMINAL",
+        "name": "LEX_KEYWORD_ALL",
+	"propName": "uniqueness"
+    },
+    "select_uniqueness_distinct": {
+        "production": "TERMINAL",
+        "name": "LEX_KEYWORD_DISTINCT",
+	"propName": "uniqueness"
     },
     "select_item": {
 	"production": "ANYOF",

@@ -63,6 +63,20 @@ exports.makeTree = function(selectContext) {
     
     let bottomNode = displayNode;
 
+    if (selectContext.uniqueness && selectContext.uniqueness.toUpperCase() == "DISTINCT") {
+	let distinctNode = new NODES.Distinct();
+	for (let i=0; i<bottomNode.requiredColumns.length; i++) {
+	    let col = new NODES.InternalColumn();
+	    col.name = bottomNode.requiredColumns[i].name;
+	    col.tableName = bottomNode.requiredColumns[i].tableName;
+	    //col.printTree("DISTINCT new col");
+	    distinctNode.outputColumns.push(col);
+	    distinctNode.requiredColumns.push(col);
+	}
+	bottomNode.children.push(distinctNode);
+	bottomNode = distinctNode;
+    }
+
     // (optionally, ie if have WHERE clause) add in a FILTER node to supply-chain
     if (selectContext.wherePredicate) {
 	//console.log("formatSelect() - got wherePredicate");

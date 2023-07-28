@@ -521,6 +521,7 @@ exports.RawJoin.prototype.printTree = function(indent) {
 
 //-------------------------------------------------
 
+
 exports.Join = function() {
     this.joinType;
     this.predicate = null;
@@ -1147,6 +1148,80 @@ function rule_Display_2(self, contractParent) {
 
 //-------------------------------------------------
 
+exports.Distinct = function() {
+    this.outputColumns = [];
+    this.requiredColumns = [];
+    this.children = [];
+    this.optimizerContracts = [];
+    this.optimizerRules = [
+	{ rule:	rule_Distinct_1, count: 0 },
+	{ rule:	rule_Distinct_2, count: 0 }
+    ];
+}
+exports.Distinct.prototype.getOperatorName = function() {
+    return '[Distinct]';
+}
+exports.Distinct.prototype.printTree = function(indent) {
+    console.log(indent, this.getOperatorName());
+    if (this.children.length == 1) {
+	this.children[0].printTree(indent + '>');
+    } else {
+	console.log(indent, this.getOperatorName(), "No children");
+    }
+}
+exports.Distinct.prototype.printPlan = function() {
+    console.log(this.getOperatorName(), "PLAN");
+    if (this.optimizerContracts.length != 1) {
+	//this.printTree('??> ');
+	for (var i=0; i<this.children.length; i++) {
+            this.children[i].printTree('<' + i + '> ');
+	}
+	throw("Distinct node - expected 1 contract, got " + this.optimizerContracts.length);
+    }
+    for (var i=0; i<this.optimizerContracts.length; i++) {
+        this.optimizerContracts[i].supplier.printPlan();
+    }
+}
+exports.Distinct.prototype.createContracts = function() {
+    console.log("Distinct.createContracts");
+    if (this.children.length != 1) {
+	this.printTree('??');
+	this.printPlan();
+	throw("Distinct node - expected 1 child in createContracts(), got " + this.children.length);
+    }
+    let contract = new SupplychainContract();
+    contract.minCardinality = 0;
+    contract.maxCardinality = Number.MAX_VALUE;
+    contract.supplier = this.children[0];
+    this.optimizerContracts.push(contract);    
+    this.children[0].createContracts();
+    this.children[0] = null; // no longer needed, let GC reclaim it
+}
+exports.Distinct.prototype.getContractCost = function() {
+    let cost = 0.0;
+    cost += this.optimizerContracts[0].supplier.getContractCost();
+    return cost;
+}
+exports.Distinct.prototype.improveContract = function(contractParent, suggestedContracts) {
+    console.log("Distinct.improveContract");
+    for (let i=0; i<this.optimizerRules.length; i++) {
+        this.optimizerRules[i].rule(this, contractParent);
+    }
+    const alternativeContract = [];
+    this.optimizerContracts[0].supplier.improveContract(this.optimizerContracts[0], alternativeContract);
+}
+
+function rule_Distinct_1(self, contractParent) {
+    console.log("rule_Distinct_1");
+}
+
+function rule_Distinct_2(self, contractParent) {
+    console.log("rule_Distinct_2");
+}
+
+
+//-------------------------------------------------
+
 exports.TableScan = function() {
     this.outputColumns = [];
     this.databaseName = '';
@@ -1546,6 +1621,7 @@ exports.Filter.prototype.getContractCost = function() {
 }
 exports.Filter.prototype.printPlan = function() {
     //console.log("Filter.printPlan()");
+    console.log(this.getOperatorName(), "PLAN");
     if (SHOW_COLUMNS) {
         console.log("-- FILTER PLAN output columns--");
         for (var i=0; i<this.outputColumns.length; i++) {
