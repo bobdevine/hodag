@@ -10,11 +10,12 @@ This repository contains:
   * a parser for (logical, mathematical, and predicate) expressions
   * a rule-based optimizer with a "supply chain" metaphor
 
-**WARNING: This project exists solely for educational reasons.
-It is not production quality.**
+**WARNING: This proof-of-concept project exists solely for educational reasons.
+It is not production quality. If you want someone to improve it, contact me.**
 
 Hodag can process SQL queries very quickly.
-An average query takes only a few dozen milliseconds to parse and optimize.
+An average query takes only a few milliseconds to parse and optimize.
+(The time includes sending messages between the browser and the backend.)
 
 Hodag might be suitable for adaptive query processing (AQP).
 Prior optimizers are not suitable for JIT query processing because their overhead for
@@ -53,12 +54,12 @@ For testing, open the client webpage file in any browser:
 
  sql_client.html
 
-Then simply enter a query into the webpage's form.
-The browser will package the query and send the request to the back-end's network port.
+Then simply enter a SQL query into the webpage's form.
+The browser will package the query and send the request to the back-end.
+Any error will be displayed in the results window.
 
 See the metadata.js file for which fake table names can be queried.
 Try "select * from tt1" or "select ddd from tt1 left join tt2".
-Look in metadata.js for (fake) table definitions.
 
 
 ## Internal Phases
@@ -348,7 +349,7 @@ By 2000-2010 when uniprocessor speeds hit their maximums of clock-rate and heat-
 
 Over the past 10-15 years, core throughput increases have slowed, so CPU designers have scaled up core counts to continue increasing performance.
 The first generation of multi-core CPUs had 2 cores.
-Now CPUs typically have 4-20. By 2030, CPUs will have 100s of cores.
+Now CPUs typically have 4-20. By 2025, CPUs will have 100s of cores.
 Database designers have not adopted to this newer hardware.
 Most DBMS code was initially written before multi-core CPUs and "big data".
 
